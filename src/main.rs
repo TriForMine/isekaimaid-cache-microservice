@@ -33,8 +33,6 @@ fn handle_connection(mut stream: TcpStream) {
 
     ser::into_writer(&input, &mut buff).unwrap();
 
-    println!("{:?}", &buff.get_ref());
-
     stream.write(&buff.get_ref());
     stream.flush().unwrap();
 }
