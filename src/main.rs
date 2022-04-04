@@ -1,15 +1,14 @@
-use std::io::{Cursor};
-use std::sync::{Arc};
-use futures_util::StreamExt as _;
+use actix_web::{get, post, web, App, Error, HttpResponse, HttpServer};
 use ciborium::{de, ser};
 use dashmap::DashMap;
-use serde_derive::{Serialize, Deserialize};
-use actix_web::{post, get, web, App, HttpServer, HttpResponse, Error};
+use futures_util::StreamExt as _;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
-
+use serde_derive::{Deserialize, Serialize};
+use std::io::Cursor;
+use std::sync::Arc;
 
 struct AppState {
-    channels: DashMap<u64, Channel>
+    channels: DashMap<u64, Channel>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -24,7 +23,11 @@ struct Channel {
 }
 
 #[post("/channels/set/{channel_id}")]
-async fn set_channel(path: web::Path<u64>, mut body: web::Payload, data: web::Data<AppState>) -> Result<HttpResponse, Error>  {
+async fn set_channel(
+    path: web::Path<u64>,
+    mut body: web::Payload,
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
     let channel_id = path.into_inner();
 
     let mut bytes = Vec::new();
@@ -41,7 +44,10 @@ async fn set_channel(path: web::Path<u64>, mut body: web::Payload, data: web::Da
 }
 
 #[get("/channels/get/{channel_id}")]
-async fn get_channel(path: web::Path<u64>, data: web::Data<AppState>) -> Result<HttpResponse, Error>  {
+async fn get_channel(
+    path: web::Path<u64>,
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
     let channel_id = path.into_inner();
 
     let res = data.channels.get(&channel_id);
@@ -54,7 +60,10 @@ async fn get_channel(path: web::Path<u64>, data: web::Data<AppState>) -> Result<
 }
 
 #[get("/channels/has/{channel_id}")]
-async fn has_channel(path: web::Path<u64>, data: web::Data<AppState>) -> Result<HttpResponse, Error>  {
+async fn has_channel(
+    path: web::Path<u64>,
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
     let channel_id = path.into_inner();
 
     let res = data.channels.contains_key(&channel_id);
@@ -63,7 +72,10 @@ async fn has_channel(path: web::Path<u64>, data: web::Data<AppState>) -> Result<
 }
 
 #[post("/channels/delete/{channel_id}")]
-async fn delete_channel(path: web::Path<u64>, data: web::Data<AppState>) -> Result<HttpResponse, Error>  {
+async fn delete_channel(
+    path: web::Path<u64>,
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
     let channel_id = path.into_inner();
 
     data.channels.remove(&channel_id);
@@ -72,7 +84,7 @@ async fn delete_channel(path: web::Path<u64>, data: web::Data<AppState>) -> Resu
 }
 
 #[get("/channels/get")]
-async fn get_channels(data: web::Data<AppState>) -> Result<HttpResponse, Error>  {
+async fn get_channels(data: web::Data<AppState>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
     println!("{:?}", data.channels);
@@ -85,7 +97,7 @@ async fn get_channels(data: web::Data<AppState>) -> Result<HttpResponse, Error> 
 }
 
 #[post("/channels/set")]
-async fn index(mut body: web::Payload) -> Result<HttpResponse, Error>  {
+async fn index(mut body: web::Payload) -> Result<HttpResponse, Error> {
     let mut bytes = Vec::new();
     while let Some(item) = body.next().await {
         let item = item?;
@@ -112,7 +124,7 @@ async fn main() -> std::io::Result<()> {
     builder.set_certificate_chain_file("cert.pem").unwrap();
 
     let state = web::Data::new(AppState {
-        channels: DashMap::new()
+        channels: DashMap::new(),
     });
 
     HttpServer::new(move || {
@@ -125,7 +137,7 @@ async fn main() -> std::io::Result<()> {
             .service(has_channel)
             .service(delete_channel)
     })
-        .bind_openssl("127.0.0.1:9493", builder)?
-        .run()
-        .await
+    .bind_openssl("127.0.0.1:9493", builder)?
+    .run()
+    .await
 }
