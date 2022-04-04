@@ -1,9 +1,9 @@
-use std::io::{BufReader, BufWriter, Cursor};
+use ciborium::value::Value;
+use ciborium::{de, ser};
 use std::io::prelude::*;
+use std::io::{BufReader, BufWriter, Cursor};
 use std::net::TcpListener;
 use std::net::TcpStream;
-use ciborium::{de, ser};
-use ciborium::value::Value;
 
 fn handle_connection(mut stream: TcpStream) {
     let mut data = Vec::new();
