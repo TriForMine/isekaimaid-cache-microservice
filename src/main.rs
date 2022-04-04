@@ -1,5 +1,5 @@
-use std::io::{Cursor};
-use std::sync::{Arc};
+use std::io::Cursor;
+use std::sync::Arc;
 use futures_util::StreamExt as _;
 use ciborium::{de, ser};
 use dashmap::DashMap;
