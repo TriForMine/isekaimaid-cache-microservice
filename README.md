@@ -1,6 +1,6 @@
 [![DeepSource](https://deepsource.io/gh/TriForMine/isekaimaid-cache-microservice.svg/?label=active+issues&show_trend=true&token=Zbsgup2Gr-CCAULgoER8AY5M)](https://deepsource.io/gh/TriForMine/isekaimaid-cache-microservice/?ref=repository-badge)
 
-# Isekaimaid Cache Microservice
+# Isekai Maid Cache Microservice
 This is an external cache for my bot [Isekai Maid](https://www.isekaimaid.xyz).
 
 It's using actix-web for accessing the cache.
