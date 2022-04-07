@@ -1,99 +1,17 @@
-use actix_web::{get, post, web, App, Error, HttpResponse, HttpServer};
+mod channels;
+mod types;
+
+use crate::channels::{delete_channel, get_channel, get_channels, has_channel, set_channel};
+use crate::types::Channel;
+use actix_web::{post, web, App, Error, HttpResponse, HttpServer};
 use ciborium::{de, ser};
 use dashmap::DashMap;
 use futures_util::StreamExt as _;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
-use serde_derive::{Deserialize, Serialize};
 use std::io::Cursor;
-use std::sync::Arc;
 
-struct AppState {
+pub struct AppState {
     channels: DashMap<u64, Channel>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-struct Channel {
-    #[serde(rename = "type")]
-    kind: u8,
-    name: String,
-    guild_id: u64,
-    permission_overwrites: Vec<String>,
-    id: u64,
-}
-
-#[post("/channels/set/{channel_id}")]
-async fn set_channel(
-    path: web::Path<u64>,
-    mut body: web::Payload,
-    data: web::Data<AppState>,
-) -> Result<HttpResponse, Error> {
-    let channel_id = path.into_inner();
-
-    let mut bytes = Vec::new();
-    while let Some(item) = body.next().await {
-        let item = item?;
-        bytes.extend_from_slice(&item);
-    }
-
-    let input: Channel = de::from_reader(&*bytes).unwrap();
-
-    data.channels.insert(channel_id, input);
-
-    Ok(HttpResponse::Ok().body("Ok"))
-}
-
-#[get("/channels/get/{channel_id}")]
-async fn get_channel(
-    path: web::Path<u64>,
-    data: web::Data<AppState>,
-) -> Result<HttpResponse, Error> {
-    let channel_id = path.into_inner();
-
-    let res = data.channels.get(&channel_id);
-
-    let mut buff = Cursor::new(Vec::new());
-    ser::into_writer(&res.as_deref().unwrap(), &mut buff).unwrap();
-    let res = buff.get_ref();
-
-    Ok(HttpResponse::Ok().body(res.clone()))
-}
-
-#[get("/channels/has/{channel_id}")]
-async fn has_channel(
-    path: web::Path<u64>,
-    data: web::Data<AppState>,
-) -> Result<HttpResponse, Error> {
-    let channel_id = path.into_inner();
-
-    let res = data.channels.contains_key(&channel_id);
-
-    Ok(HttpResponse::Ok().body(res.to_string()))
-}
-
-#[post("/channels/delete/{channel_id}")]
-async fn delete_channel(
-    path: web::Path<u64>,
-    data: web::Data<AppState>,
-) -> Result<HttpResponse, Error> {
-    let channel_id = path.into_inner();
-
-    data.channels.remove(&channel_id);
-
-    Ok(HttpResponse::Ok().body("Ok"))
-}
-
-#[get("/channels/get")]
-async fn get_channels(data: web::Data<AppState>) -> Result<HttpResponse, Error> {
-    let mut buff = Cursor::new(Vec::new());
-
-    println!("{:?}", data.channels);
-
-    ser::into_writer(&data.channels, &mut buff).unwrap();
-
-    let res = buff.get_ref();
-
-    Ok(HttpResponse::Ok().body(res.clone()))
 }
 
 #[post("/channels/set")]
