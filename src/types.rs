@@ -2,6 +2,26 @@ use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
+pub struct User {
+    id: u64,
+    username: String,
+    discriminator: u8,
+    avatar: String,
+    bot: bool,
+    locale: Option<String>
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct Member {
+    id: u64,
+    guild_id: u64,
+    roles: Vec<u64>,
+    cached_at: u32
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct Channel {
     #[serde(rename = "type")]
     kind: u8,
@@ -80,7 +100,7 @@ pub struct EmbedFooter {
 pub struct Embed {
     title: Option<String>,
     #[serde(rename = "type")]
-    kind: Option<u8>,
+    kind: String,
     description: Option<String>,
     url: Option<String>,
     timestamp: Option<String>,
@@ -89,9 +109,9 @@ pub struct Embed {
     image: Option<Image>,
     thumbnail: Option<Image>,
     video: Option<Image>,
-    provider: String,
-    author: EmbedAuthor,
-    fields: Vec<EmbedField>
+    provider: Option<String>,
+    author: Option<EmbedAuthor>,
+    fields: Option<Vec<EmbedField>>
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -114,6 +134,7 @@ pub struct SelectOption {
     default: Option<bool>
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 pub enum ButtonStyle {
     Primary = 1,
     Secondary,
@@ -122,9 +143,16 @@ pub enum ButtonStyle {
     Link,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 pub enum TextStyle {
     Short = 1,
     Paragraph = 2,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+enum ComponentStyle {
+    ButtonStyle(ButtonStyle),
+    TextStyle(TextStyle)
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -134,7 +162,7 @@ pub struct Component {
     kind: Option<u8>,
     custom_id: Option<String>,
     disabled: Option<bool>,
-    style: Option<ButtonStyle | TextStyle>,
+    style: Option<ComponentStyle>,
     label: Option<String>,
     value: Option<String>,
     emoji: DiscordEmoji,
@@ -152,17 +180,17 @@ pub struct Message {
     #[serde(rename = "type")]
     kind: u8,
     content: String,
-    timestamp: u32,
+    timestamp: Option<String>,
     tag: String,
-    edited_timestamp: u32,
-    attachments: Vec<Attachment>,
-    embeds: Vec<Embed>,
-    reactions: Vec<MessageReaction>,
-    interaction: MessageInteraction,
-    components: Vec<Component>,
+    edited_timestamp: Option<String>,
+    attachments: Option<Vec<Attachment>>,
+    embeds: Option<Vec<Embed>>,
+    reactions: Option<Vec<MessageReaction>>,
+    interaction: Option<MessageInteraction>,
+    components: Option<Vec<Component>>,
     id: u64,
-    guild_id: u64,
-    author_id: u64,
+    guild_id: Option<u64>,
+    author_id: Option<u64>,
     user: Option<User>,
     member: Option<Member>
 }
