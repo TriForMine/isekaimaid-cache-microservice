@@ -277,6 +277,8 @@ pub struct Role {
 #[serde(rename_all = "camelCase")]
 pub struct Guild {
     #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     preferred_locale: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     joined_at: Option<String>,
