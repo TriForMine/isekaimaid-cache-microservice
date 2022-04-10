@@ -1,19 +1,20 @@
 mod channels;
 mod types;
 mod messages;
+mod guilds;
 
 use crate::channels::{delete_channel, get_channel, get_channels, has_channel, set_channel, set_channels};
-use crate::types::{Channel, Message};
-use actix_web::{post, web, App, Error, HttpResponse, HttpServer};
-use ciborium::{de, ser};
+use crate::types::{Channel, Guild, Message};
+use actix_web::{web, App, HttpServer};
 use dashmap::DashMap;
-use futures_util::StreamExt as _;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
+use crate::guilds::{delete_guild, get_guild, get_guilds, has_guild, set_guild, set_guilds};
 use crate::messages::{delete_message, get_message, get_messages, has_message, set_message, set_messages};
 
 pub struct AppState {
     channels: DashMap<u64, Channel>,
     messages: DashMap<u64, Message>,
+    guilds: DashMap<u64, Guild>,
 }
 
 #[actix_web::main]
@@ -27,6 +28,7 @@ async fn main() -> std::io::Result<()> {
     let state = web::Data::new(AppState {
         channels: DashMap::new(),
         messages: DashMap::new(),
+        guilds: DashMap::new(),
     });
 
     HttpServer::new(move || {
@@ -45,6 +47,13 @@ async fn main() -> std::io::Result<()> {
             .service(get_message)
             .service(has_message)
             .service(delete_message)
+
+            .service(set_guilds)
+            .service(get_guilds)
+            .service(set_guild)
+            .service(get_guild)
+            .service(has_guild)
+            .service(delete_guild)
     })
     .bind_openssl("127.0.0.1:9493", builder)?
     .run()

@@ -1,14 +1,16 @@
+use dashmap::DashMap;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
     id: u64,
-    username: String,
+    username: Box<String>,
     discriminator: u8,
-    avatar: String,
+    avatar: Box<String>,
     bot: bool,
-    locale: Option<String>
+    #[serde(skip_serializing_if = "Option::is_none")]
+    locale: Option<Box<String>>
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -25,9 +27,9 @@ pub struct Member {
 pub struct Channel {
     #[serde(rename = "type")]
     kind: u8,
-    name: String,
+    name: Box<String>,
     guild_id: u64,
-    permission_overwrites: Vec<String>,
+    permission_overwrites: Vec<Box<String>>,
     id: u64,
 }
 
@@ -35,21 +37,26 @@ pub struct Channel {
 #[serde(rename_all = "camelCase")]
 pub struct Attachment {
     id: u64,
-    filename: String,
-    content_type: Option<String>,
+    filename: Box<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    content_type: Option<Box<String>>,
     size: u16,
-    url: String,
-    proxy_url: String,
+    url: Box<String>,
+    proxy_url: Box<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     height: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     width: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     ephemeral: Option<bool>
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct DiscordEmoji {
+    #[serde(skip_serializing_if = "Option::is_none")]
     id: Option<u64>,
-    name: String,
+    name: Box<String>,
     animated: bool
 }
 
@@ -64,53 +71,74 @@ pub struct MessageReaction {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Image {
-    url: String,
-    proxy_url: String,
+    url: Box<String>,
+    proxy_url: Box<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     height: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     width: Option<u32>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct EmbedAuthor {
-    name: Option<String>,
-    url: Option<String>,
-    icon_url: Option<String>,
-    proxy_icon_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    url: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    icon_url: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    proxy_icon_url: Option<Box<String>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct EmbedField {
-    name: Option<String>,
-    value: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<Box<String>>,
+    value: Box<String>,
     inline: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct EmbedFooter {
-    text: Option<String>,
-    icon_url: Option<String>,
-    proxy_icon_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    text: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    icon_url: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    proxy_icon_url: Option<Box<String>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Embed {
-    title: Option<String>,
+    title: Option<Box<String>>,
     #[serde(rename = "type")]
-    kind: String,
-    description: Option<String>,
-    url: Option<String>,
-    timestamp: Option<String>,
+    kind: Box<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    description: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    url: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    timestamp: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     color: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     footer: Option<EmbedFooter>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     image: Option<Image>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     thumbnail: Option<Image>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     video: Option<Image>,
-    provider: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    provider: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     author: Option<EmbedAuthor>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     fields: Option<Vec<EmbedField>>
 }
 
@@ -118,19 +146,22 @@ pub struct Embed {
 #[serde(rename_all = "camelCase")]
 pub struct MessageInteraction {
     id: u64,
-    #[serde(rename = "type")]
+    #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
     kind: Option<u8>,
-    name: String,
+    name: Box<String>,
     user: User
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SelectOption {
-    label: String,
-    value: String,
-    description: Option<String>,
+    label: Box<String>,
+    value: Box<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    description: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     emoji: Option<DiscordEmoji>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     default: Option<bool>
 }
 
@@ -158,19 +189,29 @@ enum ComponentStyle {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Component {
-    #[serde(rename = "type")]
+    #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
     kind: Option<u8>,
-    custom_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    custom_id: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     disabled: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     style: Option<ComponentStyle>,
-    label: Option<String>,
+    label: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     value: Option<String>,
     emoji: DiscordEmoji,
-    url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    url: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     options: Option<Vec<SelectOption>>,
-    placeholder: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    placeholder: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     min_values: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     max_values: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     components: Option<Vec<Component>>
 }
 
@@ -179,18 +220,72 @@ pub struct Component {
 pub struct Message {
     #[serde(rename = "type")]
     kind: u8,
-    content: String,
-    timestamp: Option<String>,
-    tag: String,
-    edited_timestamp: Option<String>,
+    content: Box<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    timestamp: Option<Box<String>>,
+    tag: Box<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    edited_timestamp: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     attachments: Option<Vec<Attachment>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     embeds: Option<Vec<Embed>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     reactions: Option<Vec<MessageReaction>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     interaction: Option<MessageInteraction>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     components: Option<Vec<Component>>,
     id: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
     guild_id: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     author_id: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     user: Option<User>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     member: Option<Member>
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct Role {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    guild_id: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    position: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    color: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    id: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    bot_id: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    integration_id: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    permissions: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    icon: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    unicode_emoji: Option<Box<String>>
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct Guild {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    preferred_locale: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    joined_at: Option<Box<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    member_count: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    shard_id: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    roles: Option<DashMap<u64, Role>>,
+    id: u64,
+    owner_id: u64
 }

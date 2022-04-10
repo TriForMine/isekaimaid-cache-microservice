@@ -14,3 +14,4 @@ serde_derive = "1.0"
 ciborium="0.2"
 dashmap = { version = "5.2", features=["serde"] }
 futures-util="0.3"
+serde_with_macros = "1.5"

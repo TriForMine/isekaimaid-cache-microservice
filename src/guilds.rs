@@ -1,4 +1,4 @@
-use crate::types::Message;
+use crate::types::Guild;
 use crate::AppState;
 use actix_web::{get, post, web, Error, HttpResponse};
 use ciborium::{de, ser};
@@ -6,13 +6,13 @@ use futures_util::StreamExt as _;
 use std::io::Cursor;
 use dashmap::DashMap;
 
-#[post("/messages/set/{message_id}")]
-pub async fn set_message(
+#[post("/guilds/set/{guild_id}")]
+pub async fn set_guild(
     path: web::Path<u64>,
     mut body: web::Payload,
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
-    let message_id = path.into_inner();
+    let guild_id = path.into_inner();
 
     let mut bytes = Vec::new();
     while let Some(item) = body.next().await {
@@ -20,21 +20,21 @@ pub async fn set_message(
         bytes.extend_from_slice(&item);
     }
 
-    let input: Message = de::from_reader(&*bytes).unwrap();
+    let input: Guild = de::from_reader(&*bytes).unwrap();
 
-    data.messages.insert(message_id, input);
+    data.guilds.insert(guild_id, input);
 
     Ok(HttpResponse::Ok().body("Ok"))
 }
 
-#[get("/messages/get/{message_id}")]
-pub async fn get_message(
+#[get("/guilds/get/{guild_id}")]
+pub async fn get_guild(
     path: web::Path<u64>,
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
-    let message_id = path.into_inner();
+    let guild_id = path.into_inner();
 
-    let res = data.messages.get(&message_id);
+    let res = data.guilds.get(&guild_id);
 
     let mut buff = Cursor::new(Vec::new());
     ser::into_writer(&res.as_deref().unwrap(), &mut buff).unwrap();
@@ -43,52 +43,52 @@ pub async fn get_message(
     Ok(HttpResponse::Ok().body(res.clone()))
 }
 
-#[get("/messages/has/{message_id}")]
-pub async fn has_message(
+#[get("/guilds/has/{guild_id}")]
+pub async fn has_guild(
     path: web::Path<u64>,
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
-    let message_id = path.into_inner();
+    let guild_id = path.into_inner();
 
-    let res = data.messages.contains_key(&message_id);
+    let res = data.guilds.contains_key(&guild_id);
 
     Ok(HttpResponse::Ok().body(res.to_string()))
 }
 
-#[post("/messages/delete/{message_id}")]
-pub async fn delete_message(
+#[post("/guilds/delete/{guild_id}")]
+pub async fn delete_guild(
     path: web::Path<u64>,
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
-    let message_id = path.into_inner();
+    let guild_id = path.into_inner();
 
-    data.messages.remove(&message_id);
+    data.guilds.remove(&guild_id);
 
     Ok(HttpResponse::Ok().body("Ok"))
 }
 
-#[get("/messages/get")]
-pub async fn get_messages(data: web::Data<AppState>) -> Result<HttpResponse, Error> {
+#[get("/guilds/get")]
+pub async fn get_guilds(data: web::Data<AppState>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
-    println!("{:?}", data.messages);
+    println!("{:?}", data.guilds);
 
-    ser::into_writer(&data.messages, &mut buff).unwrap();
+    ser::into_writer(&data.guilds, &mut buff).unwrap();
 
     let res = buff.get_ref();
 
     Ok(HttpResponse::Ok().body(res.clone()))
 }
 
-#[post("/messages/set")]
-pub async fn set_messages(mut body: web::Payload) -> Result<HttpResponse, Error> {
+#[post("/guilds/set")]
+pub async fn set_guilds(mut body: web::Payload) -> Result<HttpResponse, Error> {
     let mut bytes = Vec::new();
     while let Some(item) = body.next().await {
         let item = item?;
         bytes.extend_from_slice(&item);
     }
 
-    let input: DashMap<u64, Message> = de::from_reader(&*bytes).unwrap();
+    let input: DashMap<u64, Guild> = de::from_reader(&*bytes).unwrap();
 
     let mut buff = Cursor::new(Vec::new());
 
