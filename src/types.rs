@@ -220,7 +220,7 @@ pub struct Component {
 pub struct Message {
     #[serde(rename = "type")]
     kind: u8,
-    content: Box<String>,
+    content: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<String>,
     tag: String,
