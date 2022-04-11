@@ -10,7 +10,7 @@ pub struct User {
     avatar: String,
     bot: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
-    locale: Option<String>
+    locale: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -19,7 +19,7 @@ pub struct Member {
     id: u64,
     guild_id: u64,
     roles: Vec<u64>,
-    cached_at: u32
+    cached_at: u32,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -48,7 +48,7 @@ pub struct Attachment {
     #[serde(skip_serializing_if = "Option::is_none")]
     width: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    ephemeral: Option<bool>
+    ephemeral: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -57,7 +57,7 @@ pub struct DiscordEmoji {
     #[serde(skip_serializing_if = "Option::is_none")]
     id: Option<u64>,
     name: String,
-    animated: bool
+    animated: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -65,7 +65,7 @@ pub struct DiscordEmoji {
 pub struct MessageReaction {
     me: bool,
     count: u32,
-    emoji: DiscordEmoji
+    emoji: DiscordEmoji,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -139,7 +139,7 @@ pub struct Embed {
     #[serde(skip_serializing_if = "Option::is_none")]
     author: Option<EmbedAuthor>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    fields: Option<Vec<EmbedField>>
+    fields: Option<Vec<EmbedField>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -149,7 +149,7 @@ pub struct MessageInteraction {
     #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
     kind: Option<u8>,
     name: String,
-    user: User
+    user: User,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -162,7 +162,7 @@ pub struct SelectOption {
     #[serde(skip_serializing_if = "Option::is_none")]
     emoji: Option<DiscordEmoji>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    default: Option<bool>
+    default: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -183,7 +183,7 @@ pub enum TextStyle {
 #[derive(Serialize, Deserialize, Debug)]
 enum ComponentStyle {
     ButtonStyle(ButtonStyle),
-    TextStyle(TextStyle)
+    TextStyle(TextStyle),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -212,7 +212,7 @@ pub struct Component {
     #[serde(skip_serializing_if = "Option::is_none")]
     max_values: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    components: Option<Vec<Component>>
+    components: Option<Vec<Component>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -244,7 +244,7 @@ pub struct Message {
     #[serde(skip_serializing_if = "Option::is_none")]
     user: Option<User>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    member: Option<Member>
+    member: Option<Member>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -270,7 +270,7 @@ pub struct Role {
     #[serde(skip_serializing_if = "Option::is_none")]
     icon: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    unicode_emoji: Option<String>
+    unicode_emoji: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -289,5 +289,5 @@ pub struct Guild {
     #[serde(skip_serializing_if = "Option::is_none")]
     roles: Option<DashMap<u64, Role>>,
     id: u64,
-    owner_id: u64
+    owner_id: u64,
 }
