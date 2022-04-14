@@ -21,7 +21,8 @@ pub struct User {
 pub struct Member {
     id: u64,
     guild_id: u64,
-    roles: Vec<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    roles: Option<Vec<u64>>,
     cached_at: String,
 }
 
@@ -32,7 +33,8 @@ pub struct Channel {
     kind: u8,
     name: String,
     guild_id: u64,
-    permission_overwrites: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    permission_overwrites: Option<Vec<String>>,
     id: u64,
 }
 

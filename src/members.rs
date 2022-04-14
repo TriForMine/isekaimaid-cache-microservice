@@ -4,6 +4,7 @@ use actix_web::{get, post, web, Error, HttpResponse};
 use ciborium::{de, ser};
 use futures_util::StreamExt as _;
 use std::io::Cursor;
+use std::ops::Deref;
 use dashmap::DashMap;
 
 #[post("/members/set/{member_id}")]
@@ -36,11 +37,15 @@ pub async fn get_member(
 
     let res = data.members.get(&member_id);
 
-    let mut buff = Cursor::new(Vec::new());
-    ser::into_writer(&res.as_deref().unwrap(), &mut buff).unwrap();
-    let res = buff.get_ref();
+    if let Some(r) = res {
+        let mut buff = Cursor::new(Vec::new());
+        ser::into_writer(&r.deref(), &mut buff).unwrap();
+        let res = buff.get_ref();
 
-    Ok(HttpResponse::Ok().body(res.clone()))
+        Ok(HttpResponse::Ok().body(res.clone()))
+    } else {
+        Ok(HttpResponse::NotFound().body("Not Found"))
+    }
 }
 
 #[get("/members/has/{member_id}")]

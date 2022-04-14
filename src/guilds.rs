@@ -4,6 +4,7 @@ use actix_web::{get, post, web, Error, HttpResponse};
 use ciborium::{de, ser};
 use futures_util::StreamExt as _;
 use std::io::Cursor;
+use std::ops::Deref;
 use dashmap::DashMap;
 
 #[post("/guilds/set/{guild_id}")]
@@ -13,6 +14,8 @@ pub async fn set_guild(
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
     let guild_id = path.into_inner();
+
+    println!("Set guild: {}", guild_id);
 
     let mut bytes = Vec::new();
     while let Some(item) = body.next().await {
@@ -36,11 +39,15 @@ pub async fn get_guild(
 
     let res = data.guilds.get(&guild_id);
 
-    let mut buff = Cursor::new(Vec::new());
-    ser::into_writer(&res.as_deref().unwrap(), &mut buff).unwrap();
-    let res = buff.get_ref();
+    if let Some(r) = res {
+        let mut buff = Cursor::new(Vec::new());
+        ser::into_writer(&r.deref(), &mut buff).unwrap();
+        let res = buff.get_ref();
 
-    Ok(HttpResponse::Ok().body(res.clone()))
+        Ok(HttpResponse::Ok().body(res.clone()))
+    } else {
+        Ok(HttpResponse::NotFound().body("Not Found"))
+    }
 }
 
 #[get("/guilds/has/{guild_id}")]
