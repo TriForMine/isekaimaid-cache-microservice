@@ -5,10 +5,13 @@ use serde_derive::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct User {
     id: u64,
-    username: String,
-    discriminator: u8,
-    avatar: String,
-    bot: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    username: Option<String>,
+    discriminator: u16,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    avatar: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    bot: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     locale: Option<String>,
 }
@@ -19,7 +22,7 @@ pub struct Member {
     id: u64,
     guild_id: u64,
     roles: Vec<u64>,
-    cached_at: u32,
+    cached_at: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

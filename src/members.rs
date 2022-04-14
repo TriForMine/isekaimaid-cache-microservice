@@ -1,4 +1,4 @@
-use crate::types::Guild;
+use crate::types::Member;
 use crate::AppState;
 use actix_web::{get, post, web, Error, HttpResponse};
 use ciborium::{de, ser};
@@ -6,13 +6,13 @@ use futures_util::StreamExt as _;
 use std::io::Cursor;
 use dashmap::DashMap;
 
-#[post("/guilds/set/{guild_id}")]
-pub async fn set_guild(
-    path: web::Path<u64>,
+#[post("/members/set/{member_id}")]
+pub async fn set_member(
+    path: web::Path<String>,
     mut body: web::Payload,
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
-    let guild_id = path.into_inner();
+    let member_id = path.into_inner();
 
     let mut bytes = Vec::new();
     while let Some(item) = body.next().await {
@@ -20,21 +20,21 @@ pub async fn set_guild(
         bytes.extend_from_slice(&item);
     }
 
-    let input: Guild = de::from_reader(&mut bytes.as_slice()).unwrap();
+    let input: Member = de::from_reader(&mut bytes.as_slice()).unwrap();
 
-    data.guilds.insert(guild_id, input);
+    data.members.insert(member_id, input);
 
     Ok(HttpResponse::Ok().body("Ok"))
 }
 
-#[get("/guilds/get/{guild_id}")]
-pub async fn get_guild(
-    path: web::Path<u64>,
+#[get("/members/get/{member_id}")]
+pub async fn get_member(
+    path: web::Path<String>,
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
-    let guild_id = path.into_inner();
+    let member_id = path.into_inner();
 
-    let res = data.guilds.get(&guild_id);
+    let res = data.members.get(&member_id);
 
     let mut buff = Cursor::new(Vec::new());
     ser::into_writer(&res.as_deref().unwrap(), &mut buff).unwrap();
@@ -43,52 +43,52 @@ pub async fn get_guild(
     Ok(HttpResponse::Ok().body(res.clone()))
 }
 
-#[get("/guilds/has/{guild_id}")]
-pub async fn has_guild(
-    path: web::Path<u64>,
+#[get("/members/has/{member_id}")]
+pub async fn has_member(
+    path: web::Path<String>,
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
-    let guild_id = path.into_inner();
+    let member_id = path.into_inner();
 
-    let res = data.guilds.contains_key(&guild_id);
+    let res = data.members.contains_key(&member_id);
 
     Ok(HttpResponse::Ok().body(res.to_string()))
 }
 
-#[post("/guilds/delete/{guild_id}")]
-pub async fn delete_guild(
-    path: web::Path<u64>,
+#[post("/members/delete/{member_id}")]
+pub async fn delete_member(
+    path: web::Path<String>,
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
-    let guild_id = path.into_inner();
+    let member_id = path.into_inner();
 
-    data.guilds.remove(&guild_id);
+    data.members.remove(&member_id);
 
     Ok(HttpResponse::Ok().body("Ok"))
 }
 
-#[get("/guilds/get")]
-pub async fn get_guilds(data: web::Data<AppState>) -> Result<HttpResponse, Error> {
+#[get("/members/get")]
+pub async fn get_members(data: web::Data<AppState>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
-    println!("{:?}", data.guilds);
+    println!("{:?}", data.members);
 
-    ser::into_writer(&data.guilds, &mut buff).unwrap();
+    ser::into_writer(&data.members, &mut buff).unwrap();
 
     let res = buff.get_ref();
 
     Ok(HttpResponse::Ok().body(res.clone()))
 }
 
-#[post("/guilds/set")]
-pub async fn set_guilds(mut body: web::Payload) -> Result<HttpResponse, Error> {
+#[post("/members/set")]
+pub async fn set_members(mut body: web::Payload) -> Result<HttpResponse, Error> {
     let mut bytes = Vec::new();
     while let Some(item) = body.next().await {
         let item = item?;
         bytes.extend_from_slice(&item);
     }
 
-    let input: DashMap<u64, Guild> = de::from_reader(&mut bytes.as_slice()).unwrap();
+    let input: DashMap<String, Member> = de::from_reader(&mut bytes.as_slice()).unwrap();
 
     let mut buff = Cursor::new(Vec::new());
 

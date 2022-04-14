@@ -20,7 +20,7 @@ pub async fn set_channel(
         bytes.extend_from_slice(&item);
     }
 
-    let input: Channel = de::from_reader(&*bytes).unwrap();
+    let input: Channel = de::from_reader(&mut bytes.as_slice()).unwrap();
 
     data.channels.insert(channel_id, input);
 
@@ -88,7 +88,7 @@ pub async fn set_channels(mut body: web::Payload) -> Result<HttpResponse, Error>
         bytes.extend_from_slice(&item);
     }
 
-    let input: DashMap<u64, Channel> = de::from_reader(&*bytes).unwrap();
+    let input: DashMap<u64, Channel> = de::from_reader(&mut bytes.as_slice()).unwrap();
 
     let mut buff = Cursor::new(Vec::new());
 

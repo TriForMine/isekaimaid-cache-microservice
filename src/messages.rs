@@ -20,7 +20,7 @@ pub async fn set_message(
         bytes.extend_from_slice(&item);
     }
 
-    let input: Message = de::from_reader(&*bytes).unwrap();
+    let input: Message = de::from_reader(&mut bytes.as_slice()).unwrap();
 
     data.messages.insert(message_id, input);
 
@@ -88,7 +88,7 @@ pub async fn set_messages(mut body: web::Payload) -> Result<HttpResponse, Error>
         bytes.extend_from_slice(&item);
     }
 
-    let input: DashMap<u64, Message> = de::from_reader(&*bytes).unwrap();
+    let input: DashMap<u64, Message> = de::from_reader(&mut bytes.as_slice()).unwrap();
 
     let mut buff = Cursor::new(Vec::new());
 
