@@ -28,6 +28,19 @@ pub async fn set_channel(
     Ok(HttpResponse::Ok().body("Ok"))
 }
 
+#[get("/channels/size")]
+pub async fn get_channels_size(
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
+    let res = data.channels.len();
+
+    let mut buff = Cursor::new(Vec::new());
+    ser::into_writer(&res, &mut buff).unwrap();
+    let res = buff.get_ref();
+
+    Ok(HttpResponse::Ok().body(res.clone()))
+}
+
 #[get("/channels/get/{channel_id}")]
 pub async fn get_channel(
     path: web::Path<u64>,

@@ -5,15 +5,15 @@ mod guilds;
 mod users;
 mod members;
 
-use crate::channels::{delete_channel, get_channel, get_channels, has_channel, set_channel, set_channels};
+use crate::channels::{delete_channel, get_channel, get_channels, get_channels_size, has_channel, set_channel, set_channels};
 use crate::types::{Channel, Guild, Member, Message, User};
 use actix_web::{web, App, HttpServer};
 use dashmap::DashMap;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
-use crate::guilds::{delete_guild, get_guild, get_guilds, has_guild, set_guild, set_guilds};
-use crate::members::{delete_member, get_member, get_members, has_member, set_member, set_members};
-use crate::messages::{delete_message, get_message, get_messages, has_message, set_message, set_messages};
-use crate::users::{delete_user, get_user, get_users, has_user, set_user, set_users};
+use crate::guilds::{delete_guild, get_guild, get_guilds, get_guilds_size, has_guild, set_guild, set_guilds};
+use crate::members::{delete_member, get_member, get_members, get_members_size, has_member, set_member, set_members};
+use crate::messages::{delete_message, get_message, get_messages, get_messages_size, has_message, set_message, set_messages};
+use crate::users::{delete_user, get_user, get_users, get_users_size, has_user, set_user, set_users};
 
 pub struct AppState {
     channels: DashMap<u64, Channel>,
@@ -48,6 +48,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_channel)
             .service(has_channel)
             .service(delete_channel)
+            .service(get_channels_size)
 
             .service(set_messages)
             .service(get_messages)
@@ -55,6 +56,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_message)
             .service(has_message)
             .service(delete_message)
+            .service(get_messages_size)
 
             .service(set_guilds)
             .service(get_guilds)
@@ -62,6 +64,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_guild)
             .service(has_guild)
             .service(delete_guild)
+            .service(get_guilds_size)
 
             .service(set_users)
             .service(get_users)
@@ -69,6 +72,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_user)
             .service(has_user)
             .service(delete_user)
+            .service(get_users_size)
 
             .service(set_members)
             .service(get_members)
@@ -76,6 +80,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_member)
             .service(has_member)
             .service(delete_member)
+            .service(get_members_size)
     })
     .bind_openssl("127.0.0.1:9493", builder)?
     .run()

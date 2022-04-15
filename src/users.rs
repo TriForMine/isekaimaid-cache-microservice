@@ -28,6 +28,19 @@ pub async fn set_user(
     Ok(HttpResponse::Ok().body("Ok"))
 }
 
+#[get("/users/size")]
+pub async fn get_users_size(
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
+    let res = data.users.len();
+
+    let mut buff = Cursor::new(Vec::new());
+    ser::into_writer(&res, &mut buff).unwrap();
+    let res = buff.get_ref();
+
+    Ok(HttpResponse::Ok().body(res.clone()))
+}
+
 #[get("/users/get/{user_id}")]
 pub async fn get_user(
     path: web::Path<u64>,

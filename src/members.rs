@@ -28,6 +28,19 @@ pub async fn set_member(
     Ok(HttpResponse::Ok().body("Ok"))
 }
 
+#[get("/members/size")]
+pub async fn get_members_size(
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
+    let res = data.members.len();
+
+    let mut buff = Cursor::new(Vec::new());
+    ser::into_writer(&res, &mut buff).unwrap();
+    let res = buff.get_ref();
+
+    Ok(HttpResponse::Ok().body(res.clone()))
+}
+
 #[get("/members/get/{member_id}")]
 pub async fn get_member(
     path: web::Path<String>,

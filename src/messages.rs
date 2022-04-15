@@ -28,6 +28,20 @@ pub async fn set_message(
     Ok(HttpResponse::Ok().body("Ok"))
 }
 
+
+#[get("/messages/size")]
+pub async fn get_messages_size(
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
+    let res = data.messages.len();
+
+    let mut buff = Cursor::new(Vec::new());
+    ser::into_writer(&res, &mut buff).unwrap();
+    let res = buff.get_ref();
+
+    Ok(HttpResponse::Ok().body(res.clone()))
+}
+
 #[get("/messages/get/{message_id}")]
 pub async fn get_message(
     path: web::Path<u64>,

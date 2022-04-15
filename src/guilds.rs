@@ -15,8 +15,6 @@ pub async fn set_guild(
 ) -> Result<HttpResponse, Error> {
     let guild_id = path.into_inner();
 
-    println!("Set guild: {}", guild_id);
-
     let mut bytes = Vec::new();
     while let Some(item) = body.next().await {
         let item = item?;
@@ -28,6 +26,19 @@ pub async fn set_guild(
     data.guilds.insert(guild_id, input);
 
     Ok(HttpResponse::Ok().body("Ok"))
+}
+
+#[get("/guilds/size")]
+pub async fn get_guilds_size(
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
+    let res = data.guilds.len();
+
+    let mut buff = Cursor::new(Vec::new());
+    ser::into_writer(&res, &mut buff).unwrap();
+    let res = buff.get_ref();
+
+    Ok(HttpResponse::Ok().body(res.clone()))
 }
 
 #[get("/guilds/get/{guild_id}")]
