@@ -1,5 +1,5 @@
 use crate::types::Guild;
-use crate::AppState;
+use crate::{AppState};
 use actix_web::{get, post, web, Error, HttpResponse};
 use ciborium::{de, ser};
 use futures_util::StreamExt as _;
@@ -33,6 +33,21 @@ pub async fn get_guilds_size(
     data: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
     let res = data.guilds.len();
+
+    let mut buff = Cursor::new(Vec::new());
+    ser::into_writer(&res, &mut buff).unwrap();
+    let res = buff.get_ref();
+
+    Ok(HttpResponse::Ok().body(res.clone()))
+}
+
+#[get("/guilds/{guild_id}/members")]
+pub async fn get_guilds_members_size(
+    path: web::Path<u64>,
+    data: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
+    let guild_id = path.into_inner();
+    let res = data.members.iter().filter(|v| v.deref().guild_id == guild_id).count();
 
     let mut buff = Cursor::new(Vec::new());
     ser::into_writer(&res, &mut buff).unwrap();

@@ -20,7 +20,7 @@ pub struct User {
 #[serde(rename_all = "camelCase")]
 pub struct Member {
     id: u64,
-    guild_id: u64,
+    pub(crate) guild_id: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
     roles: Option<Vec<u64>>,
     cached_at: String,
@@ -102,8 +102,10 @@ pub struct EmbedAuthor {
 pub struct EmbedField {
     #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<String>,
-    value: String,
-    inline: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    value: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    inline: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -122,7 +124,7 @@ pub struct EmbedFooter {
 pub struct Embed {
     title: Option<String>,
     #[serde(rename = "type")]
-    kind: String,
+    kind: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]

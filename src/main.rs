@@ -10,7 +10,7 @@ use crate::types::{Channel, Guild, Member, Message, User};
 use actix_web::{web, App, HttpServer};
 use dashmap::DashMap;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
-use crate::guilds::{delete_guild, get_guild, get_guilds, get_guilds_size, has_guild, set_guild, set_guilds};
+use crate::guilds::{delete_guild, get_guild, get_guilds, get_guilds_members_size, get_guilds_size, has_guild, set_guild, set_guilds};
 use crate::members::{delete_member, get_member, get_members, get_members_size, has_member, set_member, set_members};
 use crate::messages::{delete_message, get_message, get_messages, get_messages_size, has_message, set_message, set_messages};
 use crate::users::{delete_user, get_user, get_users, get_users_size, has_user, set_user, set_users};
@@ -65,6 +65,7 @@ async fn main() -> std::io::Result<()> {
             .service(has_guild)
             .service(delete_guild)
             .service(get_guilds_size)
+            .service(get_guilds_members_size)
 
             .service(set_users)
             .service(get_users)
