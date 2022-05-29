@@ -1,12 +1,12 @@
 use crate::types::Guild;
-use crate::{AppState};
+use crate::AppState;
 use actix_web::{get, post, web, Error, HttpResponse};
 use ciborium::{de, ser};
+use dashmap::DashMap;
 use futures_util::StreamExt as _;
 use std::io::Cursor;
 use std::ops::Deref;
 use std::sync::Arc;
-use dashmap::DashMap;
 
 #[post("/guilds/set/{guild_id}")]
 pub async fn set_guild(
@@ -30,9 +30,7 @@ pub async fn set_guild(
 }
 
 #[get("/guilds/size")]
-pub async fn get_guilds_size(
-    data: web::Data<Arc<AppState>>,
-) -> Result<HttpResponse, Error> {
+pub async fn get_guilds_size(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let res = data.guilds.len();
 
     let mut buff = Cursor::new(Vec::new());
@@ -48,7 +46,11 @@ pub async fn get_guilds_members_size(
     data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let guild_id = path.into_inner();
-    let res = data.members.iter().filter(|v| v.deref().guild_id == guild_id).count();
+    let res = data
+        .members
+        .iter()
+        .filter(|v| v.deref().guild_id == guild_id)
+        .count();
 
     let mut buff = Cursor::new(Vec::new());
     ser::into_writer(&res, &mut buff).unwrap();

@@ -2,11 +2,11 @@ use crate::types::User;
 use crate::AppState;
 use actix_web::{get, post, web, Error, HttpResponse};
 use ciborium::{de, ser};
+use dashmap::DashMap;
 use futures_util::StreamExt as _;
 use std::io::Cursor;
 use std::ops::Deref;
 use std::sync::Arc;
-use dashmap::DashMap;
 
 #[post("/users/set/{user_id}")]
 pub async fn set_user(
@@ -30,9 +30,7 @@ pub async fn set_user(
 }
 
 #[get("/users/size")]
-pub async fn get_users_size(
-    data: web::Data<Arc<AppState>>,
-) -> Result<HttpResponse, Error> {
+pub async fn get_users_size(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let res = data.users.len();
 
     let mut buff = Cursor::new(Vec::new());

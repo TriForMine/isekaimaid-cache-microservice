@@ -2,11 +2,11 @@ use crate::types::Member;
 use crate::AppState;
 use actix_web::{get, post, web, Error, HttpResponse};
 use ciborium::{de, ser};
+use dashmap::DashMap;
 use futures_util::StreamExt as _;
 use std::io::Cursor;
 use std::ops::Deref;
 use std::sync::Arc;
-use dashmap::DashMap;
 
 #[post("/members/set/{member_id}")]
 pub async fn set_member(
@@ -30,9 +30,7 @@ pub async fn set_member(
 }
 
 #[get("/members/size")]
-pub async fn get_members_size(
-    data: web::Data<Arc<AppState>>,
-) -> Result<HttpResponse, Error> {
+pub async fn get_members_size(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let res = data.members.len();
 
     let mut buff = Cursor::new(Vec::new());
