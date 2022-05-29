@@ -83,9 +83,9 @@ pub struct Message {
     kind: u8,
     content: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub(crate) timestamp: Option<String>,
+    pub(crate) timestamp: Option<u128>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub(crate) edited_timestamp: Option<String>,
+    pub(crate) edited_timestamp: Option<u128>,
     #[serde(skip_serializing_if = "Option::is_none")]
     embeds: Option<Vec<Embed>>,
     id: u64,

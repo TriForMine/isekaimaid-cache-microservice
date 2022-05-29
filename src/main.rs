@@ -29,7 +29,7 @@ use dashmap::DashMap;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
-use tokio::runtime::Handle;
+use tokio::runtime::{Handle, Runtime};
 
 pub struct AppState {
     channels: DashMap<u64, Channel>,
@@ -58,7 +58,7 @@ pub fn spawn(data: Arc<AppState>, handle: Handle) {
             for message in data.messages.iter() {
                 let id = message.key();
                 let message = message.value();
-                let timestamp = message.timestamp.as_ref().unwrap().parse::<u128>().unwrap();
+                let timestamp = message.timestamp.as_ref().unwrap();
 
                 if timestamp + 1000 * 60 * 15 < current_time {
                     println!("[CACHE] Deleting old message: {}", id,);
@@ -85,10 +85,9 @@ async fn main() -> std::io::Result<()> {
         members: DashMap::new(),
     });
 
-    /*
     let rt = Runtime::new().unwrap();
     let handle = rt.handle().clone();
-    spawn( state.clone(), handle);*/
+    spawn( state.clone(), handle);
 
     HttpServer::new(move || {
         App::new()
