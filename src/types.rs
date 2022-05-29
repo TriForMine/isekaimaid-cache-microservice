@@ -101,20 +101,12 @@ pub struct Message {
     pub member: Option<Member>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Role {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub guild_id: Option<u64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub position: Option<u16>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub id: Option<u64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub permissions: Option<u64>,
+    pub guild_id: u64,
+    pub position: i64,
+    pub permissions: Permissions,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -126,8 +118,6 @@ pub struct Guild {
     pub member_count: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub shard_id: Option<u8>,
-    //#[serde(skip_serializing_if = "Option::is_none")]
-    //pub roles: Option<DashMap<u64, Role>>,
     pub id: u64,
     pub owner_id: u64,
 }

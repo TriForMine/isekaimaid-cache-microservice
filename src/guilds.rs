@@ -104,7 +104,7 @@ pub async fn delete_guild(
 }
 
 #[get("/guilds/get")]
-pub async fn get_guilds(data: web::Data<AppState>) -> Result<HttpResponse, Error> {
+pub async fn get_guilds(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
     println!("{:?}", data.guilds);

@@ -85,7 +85,7 @@ pub async fn delete_member(
 }
 
 #[get("/members/get")]
-pub async fn get_members(data: web::Data<AppState>) -> Result<HttpResponse, Error> {
+pub async fn get_members(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
     println!("{:?}", data.members);
