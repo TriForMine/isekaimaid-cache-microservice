@@ -1,5 +1,5 @@
-use serde_derive::{Deserialize, Serialize};
 use crate::permissions::Permissions;
+use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -22,7 +22,7 @@ pub struct Member {
     pub id: u64,
     pub guild_id: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub  roles: Option<Vec<u64>>,
+    pub roles: Option<Vec<u64>>,
     pub cached_at: String,
 }
 
