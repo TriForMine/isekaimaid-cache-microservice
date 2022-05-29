@@ -5,11 +5,14 @@ mod guilds;
 mod users;
 mod members;
 
+use std::sync::Arc;
+use std::time::{Duration, SystemTime};
 use crate::channels::{delete_channel, get_channel, get_channels, get_channels_size, has_channel, set_channel, set_channels};
 use crate::types::{Channel, Guild, Member, Message, User};
 use actix_web::{web, App, HttpServer};
 use dashmap::DashMap;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
+use tokio::runtime::{Handle};
 use crate::guilds::{delete_guild, get_guild, get_guilds, get_guilds_members_size, get_guilds_size, has_guild, set_guild, set_guilds};
 use crate::members::{delete_member, get_member, get_members, get_members_size, has_member, set_member, set_members};
 use crate::messages::{delete_message, get_message, get_messages, get_messages_size, has_message, set_message, set_messages};
@@ -23,6 +26,33 @@ pub struct AppState {
     members: DashMap<String, Member>,
 }
 
+pub fn spawn(data: Arc<AppState>, handle: Handle) {
+    println!("[CACHE] Spawning threads");
+
+    handle.spawn(async move {
+        let mut interval = tokio::time::interval(Duration::from_secs(300));
+
+        loop {
+            interval.tick().await;
+
+            println!("[CACHE] Clearing old messages");
+
+            let current_time = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_millis();
+
+            for message in data.messages.iter() {
+                let id = message.key();
+                let message = message.value();
+                let timestamp = message.timestamp.as_ref().unwrap().parse::<u128>().unwrap();
+
+                if timestamp + 1000 * 60 * 15 < current_time {
+                    println!("[CACHE] Deleting old message: {}", id, );
+                    data.messages.remove(&id);
+                }
+            }
+        }
+    });
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
@@ -31,7 +61,7 @@ async fn main() -> std::io::Result<()> {
         .unwrap();
     builder.set_certificate_chain_file("cert.pem").unwrap();
 
-    let state = web::Data::new(AppState {
+    let state = Arc::new(AppState {
         channels: DashMap::new(),
         messages: DashMap::new(),
         guilds: DashMap::new(),
@@ -39,9 +69,14 @@ async fn main() -> std::io::Result<()> {
         members: DashMap::new(),
     });
 
+    /*
+    let rt = Runtime::new().unwrap();
+    let handle = rt.handle().clone();
+    spawn( state.clone(), handle);*/
+
     HttpServer::new(move || {
         App::new()
-            .app_data(state.clone())
+            .app_data(web::Data::new(state.clone()))
             .service(set_channels)
             .service(get_channels)
             .service(set_channel)

@@ -5,13 +5,14 @@ use ciborium::{de, ser};
 use futures_util::StreamExt as _;
 use std::io::Cursor;
 use std::ops::Deref;
+use std::sync::Arc;
 use dashmap::DashMap;
 
 #[post("/messages/set/{message_id}")]
 pub async fn set_message(
     path: web::Path<u64>,
     mut body: web::Payload,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let message_id = path.into_inner();
 
@@ -31,7 +32,7 @@ pub async fn set_message(
 
 #[get("/messages/size")]
 pub async fn get_messages_size(
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let res = data.messages.len();
 
@@ -45,7 +46,7 @@ pub async fn get_messages_size(
 #[get("/messages/get/{message_id}")]
 pub async fn get_message(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let message_id = path.into_inner();
 
@@ -65,7 +66,7 @@ pub async fn get_message(
 #[get("/messages/has/{message_id}")]
 pub async fn has_message(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let message_id = path.into_inner();
 
@@ -77,7 +78,7 @@ pub async fn has_message(
 #[post("/messages/delete/{message_id}")]
 pub async fn delete_message(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let message_id = path.into_inner();
 

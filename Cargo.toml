@@ -12,6 +12,7 @@ serde_cbor = "0.11.2"
 serde="1.0"
 serde_derive = "1.0"
 ciborium="0.2"
-dashmap = { version = "5.2", features=["serde"] }
+dashmap = { version = "5.3", features=["serde"] }
 futures-util="0.3"
+tokio= { version="1.18", features=["full"] }
 serde_with_macros = "1.5"

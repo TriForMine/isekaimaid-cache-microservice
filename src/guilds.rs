@@ -5,13 +5,14 @@ use ciborium::{de, ser};
 use futures_util::StreamExt as _;
 use std::io::Cursor;
 use std::ops::Deref;
+use std::sync::Arc;
 use dashmap::DashMap;
 
 #[post("/guilds/set/{guild_id}")]
 pub async fn set_guild(
     path: web::Path<u64>,
     mut body: web::Payload,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let guild_id = path.into_inner();
 
@@ -30,7 +31,7 @@ pub async fn set_guild(
 
 #[get("/guilds/size")]
 pub async fn get_guilds_size(
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let res = data.guilds.len();
 
@@ -44,7 +45,7 @@ pub async fn get_guilds_size(
 #[get("/guilds/{guild_id}/members")]
 pub async fn get_guilds_members_size(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let guild_id = path.into_inner();
     let res = data.members.iter().filter(|v| v.deref().guild_id == guild_id).count();
@@ -59,7 +60,7 @@ pub async fn get_guilds_members_size(
 #[get("/guilds/get/{guild_id}")]
 pub async fn get_guild(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let guild_id = path.into_inner();
 
@@ -79,7 +80,7 @@ pub async fn get_guild(
 #[get("/guilds/has/{guild_id}")]
 pub async fn has_guild(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let guild_id = path.into_inner();
 
@@ -91,7 +92,7 @@ pub async fn has_guild(
 #[post("/guilds/delete/{guild_id}")]
 pub async fn delete_guild(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let guild_id = path.into_inner();
 

@@ -5,13 +5,14 @@ use ciborium::{de, ser};
 use futures_util::StreamExt as _;
 use std::io::Cursor;
 use std::ops::Deref;
+use std::sync::Arc;
 use dashmap::DashMap;
 
 #[post("/members/set/{member_id}")]
 pub async fn set_member(
     path: web::Path<String>,
     mut body: web::Payload,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let member_id = path.into_inner();
 
@@ -30,7 +31,7 @@ pub async fn set_member(
 
 #[get("/members/size")]
 pub async fn get_members_size(
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let res = data.members.len();
 
@@ -44,7 +45,7 @@ pub async fn get_members_size(
 #[get("/members/get/{member_id}")]
 pub async fn get_member(
     path: web::Path<String>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let member_id = path.into_inner();
 
@@ -64,7 +65,7 @@ pub async fn get_member(
 #[get("/members/has/{member_id}")]
 pub async fn has_member(
     path: web::Path<String>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let member_id = path.into_inner();
 
@@ -76,7 +77,7 @@ pub async fn has_member(
 #[post("/members/delete/{member_id}")]
 pub async fn delete_member(
     path: web::Path<String>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let member_id = path.into_inner();
 

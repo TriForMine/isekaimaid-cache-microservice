@@ -5,13 +5,14 @@ use ciborium::{de, ser};
 use futures_util::StreamExt as _;
 use std::io::Cursor;
 use std::ops::Deref;
+use std::sync::Arc;
 use dashmap::DashMap;
 
 #[post("/users/set/{user_id}")]
 pub async fn set_user(
     path: web::Path<u64>,
     mut body: web::Payload,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let user_id = path.into_inner();
 
@@ -30,7 +31,7 @@ pub async fn set_user(
 
 #[get("/users/size")]
 pub async fn get_users_size(
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let res = data.users.len();
 
@@ -44,7 +45,7 @@ pub async fn get_users_size(
 #[get("/users/get/{user_id}")]
 pub async fn get_user(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let user_id = path.into_inner();
 
@@ -64,7 +65,7 @@ pub async fn get_user(
 #[get("/users/has/{user_id}")]
 pub async fn has_user(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let user_id = path.into_inner();
 
@@ -76,7 +77,7 @@ pub async fn has_user(
 #[post("/users/delete/{user_id}")]
 pub async fn delete_user(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let user_id = path.into_inner();
 

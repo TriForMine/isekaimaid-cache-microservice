@@ -5,13 +5,14 @@ use ciborium::{de, ser};
 use futures_util::StreamExt as _;
 use std::io::Cursor;
 use std::ops::Deref;
+use std::sync::Arc;
 use dashmap::DashMap;
 
 #[post("/channels/set/{channel_id}")]
 pub async fn set_channel(
     path: web::Path<u64>,
     mut body: web::Payload,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let channel_id = path.into_inner();
 
@@ -30,7 +31,7 @@ pub async fn set_channel(
 
 #[get("/channels/size")]
 pub async fn get_channels_size(
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let res = data.channels.len();
 
@@ -44,7 +45,7 @@ pub async fn get_channels_size(
 #[get("/channels/get/{channel_id}")]
 pub async fn get_channel(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let channel_id = path.into_inner();
 
@@ -64,7 +65,7 @@ pub async fn get_channel(
 #[get("/channels/has/{channel_id}")]
 pub async fn has_channel(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let channel_id = path.into_inner();
 
@@ -76,7 +77,7 @@ pub async fn has_channel(
 #[post("/channels/delete/{channel_id}")]
 pub async fn delete_channel(
     path: web::Path<u64>,
-    data: web::Data<AppState>,
+    data: web::Data<Arc<AppState>>,
 ) -> Result<HttpResponse, Error> {
     let channel_id = path.into_inner();
 
