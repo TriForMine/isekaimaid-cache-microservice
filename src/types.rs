@@ -17,6 +17,7 @@ pub struct User {
 #[serde(rename_all = "camelCase")]
 pub struct Member {
     pub id: u64,
+    pub guild_id: u64,
     pub roles: Vec<u64>,
 }
 
