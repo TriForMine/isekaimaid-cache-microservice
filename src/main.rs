@@ -5,6 +5,7 @@ mod messages;
 mod types;
 mod users;
 mod permissions;
+mod roles;
 
 use crate::channels::{
     delete_channel, get_channel, get_channels, get_channels_size, has_channel, set_channel,
@@ -21,7 +22,7 @@ use crate::messages::{
     delete_message, get_message, get_messages, get_messages_size, has_message, set_message,
     set_messages,
 };
-use crate::types::{Channel, Guild, Member, Message, User};
+use crate::types::{Channel, Guild, Member, Message, Role, User};
 use crate::users::{
     delete_user, get_user, get_users, get_users_size, has_user, set_user, set_users,
 };
@@ -31,6 +32,7 @@ use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 use tokio::runtime::{Handle};
+use crate::roles::{delete_role, get_role, get_roles, get_roles_size, has_role, set_role, set_roles};
 
 pub struct AppState {
     channels: DashMap<u64, Channel>,
@@ -38,6 +40,7 @@ pub struct AppState {
     guilds: DashMap<u64, Guild>,
     users: DashMap<u64, User>,
     members: DashMap<String, Member>,
+    roles: DashMap<u64, Role>,
 }
 
 pub fn spawn(data: Arc<AppState>, handle: Handle) {
@@ -84,6 +87,7 @@ async fn main() -> std::io::Result<()> {
         guilds: DashMap::new(),
         users: DashMap::new(),
         members: DashMap::new(),
+        roles: DashMap::new(),
     });
 
     /*
@@ -130,6 +134,13 @@ async fn main() -> std::io::Result<()> {
             .service(has_member)
             .service(delete_member)
             .service(get_members_size)
+            .service(set_roles)
+            .service(get_roles)
+            .service(set_role)
+            .service(get_role)
+            .service(has_role)
+            .service(delete_role)
+            .service(get_roles_size)
     })
     .bind_openssl("127.0.0.1:9493", builder)?
     .run()

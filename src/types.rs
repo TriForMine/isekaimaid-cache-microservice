@@ -1,4 +1,3 @@
-use dashmap::DashMap;
 use serde_derive::{Deserialize, Serialize};
 use crate::permissions::Permissions;
 
@@ -127,8 +126,8 @@ pub struct Guild {
     pub member_count: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub shard_id: Option<u8>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub roles: Option<DashMap<u64, Role>>,
+    //#[serde(skip_serializing_if = "Option::is_none")]
+    //pub roles: Option<DashMap<u64, Role>>,
     pub id: u64,
     pub owner_id: u64,
 }
