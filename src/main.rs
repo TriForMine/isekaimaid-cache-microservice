@@ -4,6 +4,7 @@ mod members;
 mod messages;
 mod types;
 mod users;
+mod permissions;
 
 use crate::channels::{
     delete_channel, get_channel, get_channels, get_channels_size, has_channel, set_channel,
@@ -29,7 +30,7 @@ use dashmap::DashMap;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
-use tokio::runtime::{Handle, Runtime};
+use tokio::runtime::{Handle};
 
 pub struct AppState {
     channels: DashMap<u64, Channel>,
@@ -85,9 +86,10 @@ async fn main() -> std::io::Result<()> {
         members: DashMap::new(),
     });
 
+    /*
     let rt = Runtime::new().unwrap();
     let handle = rt.handle().clone();
-    spawn( state.clone(), handle);
+    spawn( state.clone(), handle);*/
 
     HttpServer::new(move || {
         App::new()

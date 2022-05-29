@@ -1,135 +1,134 @@
 use dashmap::DashMap;
 use serde_derive::{Deserialize, Serialize};
+use crate::permissions::Permissions;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
-    id: u64,
+    pub id: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
-    username: Option<String>,
-    discriminator: u16,
+    pub username: Option<String>,
+    pub discriminator: u16,
     #[serde(skip_serializing_if = "Option::is_none")]
-    avatar: Option<String>,
+    pub avatar: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    bot: Option<bool>,
+    pub bot: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    locale: Option<String>,
+    pub locale: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Member {
-    id: u64,
-    pub(crate) guild_id: u64,
+    pub id: u64,
+    pub guild_id: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
-    roles: Option<Vec<u64>>,
-    cached_at: String,
+    pub  roles: Option<Vec<u64>>,
+    pub cached_at: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PermissionOverwrite {
+    pub allow: Permissions,
+    pub deny: Permissions,
+    pub id: u64,
+    #[serde(rename = "type")]
+    pub kind: u8,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Channel {
     #[serde(rename = "type")]
-    kind: u8,
+    pub kind: u8,
     #[serde(skip_serializing_if = "Option::is_none")]
-    name: Option<String>,
-    guild_id: u64,
+    pub name: Option<Box<String>>,
+    pub guild_id: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
-    permission_overwrites: Option<Vec<String>>,
-    id: u64,
+    pub permission_overwrites: Option<Vec<PermissionOverwrite>>,
+    pub id: u64,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct DiscordEmoji {
     #[serde(skip_serializing_if = "Option::is_none")]
-    id: Option<u64>,
-    name: String,
-    animated: bool,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct MessageReaction {
-    me: bool,
-    count: u32,
-    emoji: DiscordEmoji,
+    pub id: Option<u64>,
+    pub name: String,
+    pub animated: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Image {
-    url: String,
-    proxy_url: String,
+    pub url: String,
+    pub proxy_url: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    height: Option<u32>,
+    pub height: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    width: Option<u32>,
+    pub width: Option<u32>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Embed {
     #[serde(skip_serializing_if = "Option::is_none")]
-    description: Option<String>,
+    pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    image: Option<Image>,
+    pub image: Option<Image>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Message {
     #[serde(rename = "type")]
-    kind: u8,
-    content: String,
+    pub kind: u8,
+    pub content: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub(crate) timestamp: Option<u128>,
+    pub timestamp: Option<u128>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub(crate) edited_timestamp: Option<u128>,
+    pub edited_timestamp: Option<u128>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    embeds: Option<Vec<Embed>>,
-    id: u64,
+    pub embeds: Option<Vec<Embed>>,
+    pub id: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
-    guild_id: Option<u64>,
+    pub guild_id: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    author_id: Option<u64>,
+    pub author_id: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    user: Option<User>,
+    pub user: Option<User>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    member: Option<Member>,
+    pub member: Option<Member>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Role {
     #[serde(skip_serializing_if = "Option::is_none")]
-    name: Option<String>,
+    pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    guild_id: Option<u64>,
+    pub guild_id: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    position: Option<u16>,
+    pub position: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    id: Option<u64>,
+    pub id: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    permissions: Option<u64>,
+    pub permissions: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Guild {
     #[serde(skip_serializing_if = "Option::is_none")]
-    name: Option<String>,
+    pub name: Option<Box<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    preferred_locale: Option<String>,
+    pub member_count: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    joined_at: Option<String>,
+    pub shard_id: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    member_count: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    shard_id: Option<u8>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    roles: Option<DashMap<u64, Role>>,
-    id: u64,
-    owner_id: u64,
+    pub roles: Option<DashMap<u64, Role>>,
+    pub id: u64,
+    pub owner_id: u64,
 }

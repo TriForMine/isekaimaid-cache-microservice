@@ -685,6 +685,7 @@ name = "isekaimaid-cache-microservice"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "bitflags",
  "ciborium",
  "dashmap",
  "futures-util",
