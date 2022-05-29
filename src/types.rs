@@ -5,25 +5,19 @@ use crate::permissions::Permissions;
 #[serde(rename_all = "camelCase")]
 pub struct User {
     pub id: u64,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub username: Option<String>,
+    pub username: String,
     pub discriminator: u16,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub avatar: Option<String>,
+    pub avatar: Option<Box<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bot: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub locale: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Member {
     pub id: u64,
-    pub guild_id: u64,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub  roles: Option<Vec<u64>>,
-    pub cached_at: String,
+    pub roles: Vec<u64>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -112,8 +106,7 @@ pub struct Role {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Guild {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<Box<String>>,
+    pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub member_count: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
