@@ -85,7 +85,7 @@ pub async fn delete_role(
 }
 
 #[get("/roles/get")]
-pub async fn get_roles(data: web::Data<AppState>) -> Result<HttpResponse, Error> {
+pub async fn get_roles(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
     println!("{:?}", data.roles);
@@ -98,7 +98,7 @@ pub async fn get_roles(data: web::Data<AppState>) -> Result<HttpResponse, Error>
 }
 
 #[post("/roles/set")]
-pub async fn set_roles(mut body: web::Payload) -> Result<HttpResponse, Error> {
+pub async fn set_roles(data: web::Data<Arc<AppState>>, mut body: web::Payload) -> Result<HttpResponse, Error> {
     let mut bytes = Vec::new();
     while let Some(item) = body.next().await {
         let item = item?;
@@ -107,11 +107,12 @@ pub async fn set_roles(mut body: web::Payload) -> Result<HttpResponse, Error> {
 
     let input: DashMap<u64, Role> = de::from_reader(&mut bytes.as_slice()).unwrap();
 
-    let mut buff = Cursor::new(Vec::new());
+    for role in input.iter() {
+        let id = role.key();
+        let r = role.value();
 
-    ser::into_writer(&input.into_iter().collect::<Vec<_>>(), &mut buff).unwrap();
+        data.roles.insert(*id, *r);
+    }
 
-    let res = buff.get_ref();
-
-    Ok(HttpResponse::Ok().body(res.clone()))
+    Ok(HttpResponse::Ok().body("Ok"))
 }

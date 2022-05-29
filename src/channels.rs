@@ -85,7 +85,7 @@ pub async fn delete_channel(
 }
 
 #[get("/channels/get")]
-pub async fn get_channels(data: web::Data<AppState>) -> Result<HttpResponse, Error> {
+pub async fn get_channels(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
     println!("{:?}", data.channels);

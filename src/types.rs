@@ -101,11 +101,9 @@ pub struct Message {
     pub member: Option<Member>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Role {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub guild_id: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
