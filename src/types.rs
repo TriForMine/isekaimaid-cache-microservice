@@ -1,5 +1,5 @@
-use serde_derive::{Deserialize, Serialize};
 use crate::permissions::Permissions;
+use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
