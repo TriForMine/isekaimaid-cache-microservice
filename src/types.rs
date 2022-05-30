@@ -5,10 +5,10 @@ use serde_derive::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct User {
     pub id: u64,
-    pub username: String,
+    pub username: Box<str>,
     pub discriminator: u16,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub avatar: Option<Box<String>>,
+    pub avatar: Option<Box<str>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bot: Option<bool>,
 }
@@ -37,7 +37,7 @@ pub struct Channel {
     #[serde(rename = "type")]
     pub kind: u8,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<Box<String>>,
+    pub name: Option<Box<str>>,
     pub guild_id: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub permission_overwrites: Option<Vec<PermissionOverwrite>>,
@@ -49,15 +49,15 @@ pub struct Channel {
 pub struct DiscordEmoji {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<u64>,
-    pub name: String,
+    pub name: Box<str>,
     pub animated: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Image {
-    pub url: String,
-    pub proxy_url: String,
+    pub url: Box<str>,
+    pub proxy_url: Box<str>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub height: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -68,7 +68,7 @@ pub struct Image {
 #[serde(rename_all = "camelCase")]
 pub struct Embed {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
+    pub description: Option<Box<str>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub image: Option<Image>,
 }
@@ -78,7 +78,7 @@ pub struct Embed {
 pub struct Message {
     #[serde(rename = "type")]
     pub kind: u8,
-    pub content: String,
+    pub content: Box<str>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timestamp: Option<u128>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -107,7 +107,7 @@ pub struct Role {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Guild {
-    pub name: String,
+    pub name: Box<str>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub member_count: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
