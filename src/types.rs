@@ -4,7 +4,6 @@ use serde_derive::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
-    pub id: u64,
     pub username: Box<str>,
     pub discriminator: u16,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -16,7 +15,6 @@ pub struct User {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Member {
-    pub id: u64,
     pub guild_id: u64,
     pub roles: Vec<u64>,
 }
@@ -26,7 +24,6 @@ pub struct Member {
 pub struct PermissionOverwrite {
     pub allow: Permissions,
     pub deny: Permissions,
-    pub id: u64,
     #[serde(rename = "type")]
     pub kind: u8,
 }
@@ -41,16 +38,6 @@ pub struct Channel {
     pub guild_id: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub permission_overwrites: Option<Vec<PermissionOverwrite>>,
-    pub id: u64,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct DiscordEmoji {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub id: Option<u64>,
-    pub name: Box<str>,
-    pub animated: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -79,21 +66,16 @@ pub struct Message {
     #[serde(rename = "type")]
     pub kind: u8,
     pub content: Box<str>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub timestamp: Option<u128>,
+    pub timestamp: u128,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub edited_timestamp: Option<u128>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub embeds: Option<Vec<Embed>>,
-    pub id: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub guild_id: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub author_id: Option<u64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub user: Option<User>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub member: Option<Member>,
+    pub channel_id: u64,
 }
 
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
@@ -112,6 +94,5 @@ pub struct Guild {
     pub member_count: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub shard_id: Option<u8>,
-    pub id: u64,
     pub owner_id: u64,
 }

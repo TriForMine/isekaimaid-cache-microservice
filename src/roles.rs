@@ -78,7 +78,11 @@ pub async fn delete_role(
 ) -> Result<HttpResponse, Error> {
     let role_id = path.into_inner();
 
-    data.roles.remove(&role_id);
+    let (role_id, role) = data.roles.remove(&role_id).unwrap();
+
+    for mut member in data.members.iter_mut().filter(|member| member.value().guild_id == role.guild_id) {
+        member.value_mut().roles.retain(|&r| r != role_id);
+    }
 
     Ok(HttpResponse::Ok().body("Ok"))
 }
@@ -86,8 +90,6 @@ pub async fn delete_role(
 #[get("/roles/get")]
 pub async fn get_roles(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
-
-    println!("{:?}", data.roles);
 
     ser::into_writer(&data.roles, &mut buff).unwrap();
 

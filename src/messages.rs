@@ -87,8 +87,6 @@ pub async fn delete_message(
 pub async fn get_messages(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
-    println!("{:?}", data.messages);
-
     ser::into_writer(&data.messages, &mut buff).unwrap();
 
     let res = buff.get_ref();

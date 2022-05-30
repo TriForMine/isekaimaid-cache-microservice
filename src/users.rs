@@ -87,8 +87,6 @@ pub async fn delete_user(
 pub async fn get_users(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
-    println!("{:?}", data.users);
-
     ser::into_writer(&data.users, &mut buff).unwrap();
 
     let res = buff.get_ref();

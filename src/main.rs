@@ -64,7 +64,7 @@ pub fn spawn(data: Arc<AppState>, handle: Handle) {
             for message in data.messages.iter() {
                 let id = message.key();
                 let message = message.value();
-                let timestamp = message.timestamp.as_ref().unwrap();
+                let timestamp = message.timestamp;
 
                 if timestamp + 1000 * 60 * 15 < current_time {
                     println!("[CACHE] Deleting old message: {}", id,);

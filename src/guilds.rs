@@ -118,6 +118,10 @@ pub async fn delete_guild(
     let guild_id = path.into_inner();
 
     data.guilds.remove(&guild_id);
+    data.roles.retain(|_, v| v.guild_id != guild_id);
+    data.members.retain(|_, v| v.guild_id != guild_id);
+    data.messages.retain(|_, v| v.guild_id.unwrap_or_default() != guild_id);
+    data.channels.retain(|_, v| v.guild_id != guild_id);
 
     Ok(HttpResponse::Ok().body("Ok"))
 }
@@ -125,8 +129,6 @@ pub async fn delete_guild(
 #[get("/guilds/get")]
 pub async fn get_guilds(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
-
-    println!("{:?}", data.guilds);
 
     ser::into_writer(&data.guilds, &mut buff).unwrap();
 

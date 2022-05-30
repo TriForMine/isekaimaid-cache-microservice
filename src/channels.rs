@@ -79,6 +79,7 @@ pub async fn delete_channel(
     let channel_id = path.into_inner();
 
     data.channels.remove(&channel_id);
+    data.messages.retain(|_, v| v.channel_id != channel_id);
 
     Ok(HttpResponse::Ok().body("Ok"))
 }
@@ -86,8 +87,6 @@ pub async fn delete_channel(
 #[get("/channels/get")]
 pub async fn get_channels(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
-
-    println!("{:?}", data.channels);
 
     ser::into_writer(&data.channels, &mut buff).unwrap();
 
