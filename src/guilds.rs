@@ -46,16 +46,11 @@ pub async fn get_guilds_size_per_shard(
 ) -> Result<HttpResponse, Error> {
     let shard_id = path.into_inner();
 
-    println!("{}", shard_id);
-
     let res = data
         .guilds
         .iter()
         .filter(|v| v.value().shard_id.unwrap() == shard_id)
         .count();
-
-    println!("{:?}", data.guilds);
-    println!("{}", res);
 
     let mut buff = Cursor::new(Vec::new());
     ser::into_writer(&res, &mut buff).unwrap();
