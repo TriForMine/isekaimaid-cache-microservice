@@ -11,7 +11,10 @@ use crate::channels::{
     delete_channel, get_channel, get_channels, get_channels_size, has_channel, set_channel,
     set_channels,
 };
-use crate::guilds::{delete_guild, get_guild, get_guilds, get_guilds_members_size, get_guilds_size, get_guilds_size_per_shard, has_guild, set_guild, set_guilds};
+use crate::guilds::{
+    delete_guild, get_guild, get_guilds, get_guilds_members_size, get_guilds_size,
+    get_guilds_size_per_shard, has_guild, set_guild, set_guilds,
+};
 use crate::members::{
     delete_member, get_member, get_members, get_members_size, has_member, set_member, set_members,
 };
