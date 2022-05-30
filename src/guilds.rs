@@ -5,7 +5,6 @@ use ciborium::{de, ser};
 use dashmap::DashMap;
 use futures_util::StreamExt as _;
 use std::io::Cursor;
-use std::ops::Deref;
 use std::sync::Arc;
 
 #[post("/guilds/set/{guild_id}")]
@@ -40,6 +39,31 @@ pub async fn get_guilds_size(data: web::Data<Arc<AppState>>) -> Result<HttpRespo
     Ok(HttpResponse::Ok().body(res.clone()))
 }
 
+#[get("/guilds/size/{shard_id}")]
+pub async fn get_guilds_size_per_shard(
+    path: web::Path<u8>,
+    data: web::Data<Arc<AppState>>,
+) -> Result<HttpResponse, Error> {
+    let shard_id = path.into_inner();
+
+    println!("{}", shard_id);
+
+    let res = data
+        .guilds
+        .iter()
+        .filter(|v| v.value().shard_id.unwrap() == shard_id)
+        .count();
+
+    println!("{:?}", data.guilds);
+    println!("{}", res);
+
+    let mut buff = Cursor::new(Vec::new());
+    ser::into_writer(&res, &mut buff).unwrap();
+    let res = buff.get_ref();
+
+    Ok(HttpResponse::Ok().body(res.clone()))
+}
+
 #[get("/guilds/{guild_id}/members")]
 pub async fn get_guilds_members_size(
     path: web::Path<u64>,
@@ -49,7 +73,7 @@ pub async fn get_guilds_members_size(
     let res = data
         .members
         .iter()
-        .filter(|v| v.deref().guild_id == guild_id)
+        .filter(|v| v.value().guild_id == guild_id)
         .count();
 
     let mut buff = Cursor::new(Vec::new());
@@ -70,7 +94,7 @@ pub async fn get_guild(
 
     if let Some(r) = res {
         let mut buff = Cursor::new(Vec::new());
-        ser::into_writer(&r.deref(), &mut buff).unwrap();
+        ser::into_writer(&r.value(), &mut buff).unwrap();
         let res = buff.get_ref();
 
         Ok(HttpResponse::Ok().body(res.clone()))

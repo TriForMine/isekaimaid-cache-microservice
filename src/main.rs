@@ -2,25 +2,25 @@ mod channels;
 mod guilds;
 mod members;
 mod messages;
-mod types;
-mod users;
 mod permissions;
 mod roles;
+mod types;
+mod users;
 
 use crate::channels::{
     delete_channel, get_channel, get_channels, get_channels_size, has_channel, set_channel,
     set_channels,
 };
-use crate::guilds::{
-    delete_guild, get_guild, get_guilds, get_guilds_members_size, get_guilds_size, has_guild,
-    set_guild, set_guilds,
-};
+use crate::guilds::{delete_guild, get_guild, get_guilds, get_guilds_members_size, get_guilds_size, get_guilds_size_per_shard, has_guild, set_guild, set_guilds};
 use crate::members::{
     delete_member, get_member, get_members, get_members_size, has_member, set_member, set_members,
 };
 use crate::messages::{
     delete_message, get_message, get_messages, get_messages_size, has_message, set_message,
     set_messages,
+};
+use crate::roles::{
+    delete_role, get_role, get_roles, get_roles_size, has_role, set_role, set_roles,
 };
 use crate::types::{Channel, Guild, Member, Message, Role, User};
 use crate::users::{
@@ -31,8 +31,7 @@ use dashmap::DashMap;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
-use tokio::runtime::{Handle};
-use crate::roles::{delete_role, get_role, get_roles, get_roles_size, has_role, set_role, set_roles};
+use tokio::runtime::Handle;
 
 pub struct AppState {
     channels: DashMap<u64, Channel>,
@@ -116,6 +115,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_guilds)
             .service(set_guild)
             .service(get_guild)
+            .service(get_guilds_size_per_shard)
             .service(has_guild)
             .service(delete_guild)
             .service(get_guilds_size)

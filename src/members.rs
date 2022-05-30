@@ -5,7 +5,6 @@ use ciborium::{de, ser};
 use dashmap::DashMap;
 use futures_util::StreamExt as _;
 use std::io::Cursor;
-use std::ops::Deref;
 use std::sync::Arc;
 
 #[post("/members/set/{member_id}")]
@@ -51,7 +50,7 @@ pub async fn get_member(
 
     if let Some(r) = res {
         let mut buff = Cursor::new(Vec::new());
-        ser::into_writer(&r.deref(), &mut buff).unwrap();
+        ser::into_writer(&r.value(), &mut buff).unwrap();
         let res = buff.get_ref();
 
         Ok(HttpResponse::Ok().body(res.clone()))
