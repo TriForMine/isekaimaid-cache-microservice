@@ -89,7 +89,7 @@ pub async fn get_guild(
 
     if let Some(r) = res {
         let mut buff = Cursor::new(Vec::new());
-        ser::into_writer(&r.value(), &mut buff).unwrap();
+        ser::into_writer(r.value(), &mut buff).unwrap();
         let res = buff.get_ref();
 
         Ok(HttpResponse::Ok().body(res.clone()))
