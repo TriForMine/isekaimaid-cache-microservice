@@ -14,6 +14,6 @@ serde_derive = "1.0"
 ciborium="0.2"
 dashmap = { version = "5.3", features=["serde"] }
 futures-util="0.3"
-tokio= { version="1.19", features=["full"] }
+tokio= { version="1.20", features=["full"] }
 serde_with_macros = "1.5"
 bitflags="1.3"
