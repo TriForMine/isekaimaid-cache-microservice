@@ -1,7 +1,6 @@
 use crate::types::Role;
 use crate::AppState;
 use actix_web::{get, post, web, Error, HttpResponse};
-use ciborium::{de, ser};
 use dashmap::DashMap;
 use futures_util::StreamExt as _;
 use std::io::Cursor;
@@ -21,7 +20,7 @@ pub async fn set_role(
         bytes.extend_from_slice(&item);
     }
 
-    let input: Role = de::from_reader(&mut bytes.as_slice()).unwrap();
+    let input: Role = cbor4ii::serde::from_reader(&mut bytes.as_slice()).unwrap();
 
     data.roles.insert(role_id, input);
 
@@ -33,7 +32,7 @@ pub async fn get_roles_size(data: web::Data<Arc<AppState>>) -> Result<HttpRespon
     let res = data.roles.len();
 
     let mut buff = Cursor::new(Vec::new());
-    ser::into_writer(&res, &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &res).unwrap();
     let res = buff.get_ref();
 
     Ok(HttpResponse::Ok().body(res.clone()))
@@ -50,7 +49,7 @@ pub async fn get_role(
 
     if let Some(r) = res {
         let mut buff = Cursor::new(Vec::new());
-        ser::into_writer(r.value(), &mut buff).unwrap();
+        cbor4ii::serde::to_writer(&mut buff, r.value()).unwrap();
         let res = buff.get_ref();
 
         Ok(HttpResponse::Ok().body(res.clone()))
@@ -91,7 +90,7 @@ pub async fn delete_role(
 pub async fn get_roles(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
-    ser::into_writer(&data.roles, &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &data.roles).unwrap();
 
     let res = buff.get_ref();
 
@@ -109,7 +108,7 @@ pub async fn set_roles(
         bytes.extend_from_slice(&item);
     }
 
-    let input: DashMap<u64, Role> = de::from_reader(&mut bytes.as_slice()).unwrap();
+    let input: DashMap<u64, Role> = cbor4ii::serde::from_reader(&mut bytes.as_slice()).unwrap();
 
     for role in input.iter() {
         let id = role.key();

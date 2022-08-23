@@ -6,6 +6,7 @@ mod permissions;
 mod roles;
 mod types;
 mod users;
+mod stats;
 
 use crate::channels::{
     delete_channel, get_channel, get_channels, get_channels_size, has_channel, set_channel,
@@ -35,6 +36,7 @@ use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 use tokio::runtime::Handle;
+use crate::stats::get_stats;
 
 pub struct AppState {
     channels: DashMap<u64, Channel>,
@@ -100,6 +102,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(state.clone()))
+            .service(get_stats)
             .service(set_channels)
             .service(get_channels)
             .service(set_channel)

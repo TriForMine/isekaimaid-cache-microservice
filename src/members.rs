@@ -1,7 +1,6 @@
 use crate::types::Member;
 use crate::AppState;
 use actix_web::{get, post, web, Error, HttpResponse};
-use ciborium::{de, ser};
 use dashmap::DashMap;
 use futures_util::StreamExt as _;
 use std::io::Cursor;
@@ -21,7 +20,7 @@ pub async fn set_member(
         bytes.extend_from_slice(&item);
     }
 
-    let input: Member = de::from_reader(&mut bytes.as_slice()).unwrap();
+    let input: Member = cbor4ii::serde::from_reader(&mut bytes.as_slice()).unwrap();
 
     data.members.insert(member_id, input);
 
@@ -33,7 +32,7 @@ pub async fn get_members_size(data: web::Data<Arc<AppState>>) -> Result<HttpResp
     let res = data.members.len();
 
     let mut buff = Cursor::new(Vec::new());
-    ser::into_writer(&res, &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &res).unwrap();
     let res = buff.get_ref();
 
     Ok(HttpResponse::Ok().body(res.clone()))
@@ -50,7 +49,7 @@ pub async fn get_member(
 
     if let Some(r) = res {
         let mut buff = Cursor::new(Vec::new());
-        ser::into_writer(r.value(), &mut buff).unwrap();
+        cbor4ii::serde::to_writer(&mut buff, r.value()).unwrap();
         let res = buff.get_ref();
 
         Ok(HttpResponse::Ok().body(res.clone()))
@@ -87,7 +86,7 @@ pub async fn delete_member(
 pub async fn get_members(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
-    ser::into_writer(&data.members, &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &data.members).unwrap();
 
     let res = buff.get_ref();
 
@@ -102,11 +101,11 @@ pub async fn set_members(mut body: web::Payload) -> Result<HttpResponse, Error> 
         bytes.extend_from_slice(&item);
     }
 
-    let input: DashMap<String, Member> = de::from_reader(&mut bytes.as_slice()).unwrap();
+    let input: DashMap<String, Member> = cbor4ii::serde::from_reader(&mut bytes.as_slice()).unwrap();
 
     let mut buff = Cursor::new(Vec::new());
 
-    ser::into_writer(&input.into_iter().collect::<Vec<_>>(), &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &input.into_iter().collect::<Vec<_>>()).unwrap();
 
     let res = buff.get_ref();
 

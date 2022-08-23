@@ -1,7 +1,6 @@
 use crate::types::Guild;
 use crate::AppState;
 use actix_web::{get, post, web, Error, HttpResponse};
-use ciborium::{de, ser};
 use dashmap::DashMap;
 use futures_util::StreamExt as _;
 use std::io::Cursor;
@@ -21,7 +20,7 @@ pub async fn set_guild(
         bytes.extend_from_slice(&item);
     }
 
-    let input: Guild = de::from_reader(&mut bytes.as_slice()).unwrap();
+    let input: Guild = cbor4ii::serde::from_reader(&mut bytes.as_slice()).unwrap();
 
     data.guilds.insert(guild_id, input);
 
@@ -33,7 +32,7 @@ pub async fn get_guilds_size(data: web::Data<Arc<AppState>>) -> Result<HttpRespo
     let res = data.guilds.len();
 
     let mut buff = Cursor::new(Vec::new());
-    ser::into_writer(&res, &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &res).unwrap();
     let res = buff.get_ref();
 
     Ok(HttpResponse::Ok().body(res.clone()))
@@ -53,7 +52,7 @@ pub async fn get_guilds_size_per_shard(
         .count();
 
     let mut buff = Cursor::new(Vec::new());
-    ser::into_writer(&res, &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &res).unwrap();
     let res = buff.get_ref();
 
     Ok(HttpResponse::Ok().body(res.clone()))
@@ -72,7 +71,7 @@ pub async fn get_guilds_members_size(
         .count();
 
     let mut buff = Cursor::new(Vec::new());
-    ser::into_writer(&res, &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &res).unwrap();
     let res = buff.get_ref();
 
     Ok(HttpResponse::Ok().body(res.clone()))
@@ -89,7 +88,7 @@ pub async fn get_guild(
 
     if let Some(r) = res {
         let mut buff = Cursor::new(Vec::new());
-        ser::into_writer(r.value(), &mut buff).unwrap();
+        cbor4ii::serde::to_writer(&mut buff, r.value()).unwrap();
         let res = buff.get_ref();
 
         Ok(HttpResponse::Ok().body(res.clone()))
@@ -130,7 +129,7 @@ pub async fn delete_guild(
 pub async fn get_guilds(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
-    ser::into_writer(&data.guilds, &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &data.guilds).unwrap();
 
     let res = buff.get_ref();
 
@@ -145,11 +144,11 @@ pub async fn set_guilds(mut body: web::Payload) -> Result<HttpResponse, Error> {
         bytes.extend_from_slice(&item);
     }
 
-    let input: DashMap<u64, Guild> = de::from_reader(&mut bytes.as_slice()).unwrap();
+    let input: DashMap<u64, Guild> = cbor4ii::serde::from_reader(&mut bytes.as_slice()).unwrap();
 
     let mut buff = Cursor::new(Vec::new());
 
-    ser::into_writer(&input.into_iter().collect::<Vec<_>>(), &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &input.into_iter().collect::<Vec<_>>()).unwrap();
 
     let res = buff.get_ref();
 

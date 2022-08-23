@@ -1,7 +1,6 @@
 use crate::types::User;
 use crate::AppState;
 use actix_web::{get, post, web, Error, HttpResponse};
-use ciborium::{de, ser};
 use dashmap::DashMap;
 use futures_util::StreamExt as _;
 use std::io::Cursor;
@@ -21,7 +20,7 @@ pub async fn set_user(
         bytes.extend_from_slice(&item);
     }
 
-    let input: User = de::from_reader(&mut bytes.as_slice()).unwrap();
+    let input: User = cbor4ii::serde::from_reader(&mut bytes.as_slice()).unwrap();
 
     data.users.insert(user_id, input);
 
@@ -33,7 +32,7 @@ pub async fn get_users_size(data: web::Data<Arc<AppState>>) -> Result<HttpRespon
     let res = data.users.len();
 
     let mut buff = Cursor::new(Vec::new());
-    ser::into_writer(&res, &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &res).unwrap();
     let res = buff.get_ref();
 
     Ok(HttpResponse::Ok().body(res.clone()))
@@ -50,7 +49,7 @@ pub async fn get_user(
 
     if let Some(r) = res {
         let mut buff = Cursor::new(Vec::new());
-        ser::into_writer(r.value(), &mut buff).unwrap();
+        cbor4ii::serde::to_writer(&mut buff, r.value()).unwrap();
         let res = buff.get_ref();
 
         Ok(HttpResponse::Ok().body(res.clone()))
@@ -87,7 +86,7 @@ pub async fn delete_user(
 pub async fn get_users(data: web::Data<Arc<AppState>>) -> Result<HttpResponse, Error> {
     let mut buff = Cursor::new(Vec::new());
 
-    ser::into_writer(&data.users, &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &data.users).unwrap();
 
     let res = buff.get_ref();
 
@@ -102,11 +101,11 @@ pub async fn set_users(mut body: web::Payload) -> Result<HttpResponse, Error> {
         bytes.extend_from_slice(&item);
     }
 
-    let input: DashMap<u64, User> = de::from_reader(&mut bytes.as_slice()).unwrap();
+    let input: DashMap<u64, User> = cbor4ii::serde::from_reader(&mut bytes.as_slice()).unwrap();
 
     let mut buff = Cursor::new(Vec::new());
 
-    ser::into_writer(&input.into_iter().collect::<Vec<_>>(), &mut buff).unwrap();
+    cbor4ii::serde::to_writer(&mut buff, &input.into_iter().collect::<Vec<_>>()).unwrap();
 
     let res = buff.get_ref();
 

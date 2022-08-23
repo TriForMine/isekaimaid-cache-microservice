@@ -6,13 +6,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+memory-stats = "1.0.0"
 actix-web = { version = "4", features = ["openssl"] }
 openssl = { version = "0.10", features = ["v110"] }
-serde_cbor = "0.11.2"
 serde="1.0"
 serde_derive = "1.0"
-ciborium="0.2"
-dashmap = { version = "5.3", features=["serde"] }
+cbor4ii={ version="0.2", features=["serde1", "use_std"] }
+dashmap = { version = "5.3.4", features=["serde"] }
 futures-util="0.3"
 tokio= { version="1.20", features=["full"] }
 serde_with_macros = "2.0"
