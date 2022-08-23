@@ -15,5 +15,5 @@ ciborium="0.2"
 dashmap = { version = "5.3", features=["serde"] }
 futures-util="0.3"
 tokio= { version="1.20", features=["full"] }
-serde_with_macros = "1.5"
+serde_with_macros = "2.0"
 bitflags="1.3"
