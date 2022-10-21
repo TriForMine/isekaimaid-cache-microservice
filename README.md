@@ -1,3 +1,5 @@
+# I'm not working on this cache anymore, since I switched isekaimaid to [dragonflydb](https://dragonflydb.io/)
+
 [![DeepSource](https://deepsource.io/gh/TriForMine/isekaimaid-cache-microservice.svg/?label=active+issues&show_trend=true&token=Zbsgup2Gr-CCAULgoER8AY5M)](https://deepsource.io/gh/TriForMine/isekaimaid-cache-microservice/?ref=repository-badge)
 
 # Isekai Maid Cache Microservice
